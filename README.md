@@ -21,5 +21,5 @@ shell = sbf.NeuralShell(model, tokenizer)
 shell.inject_block("geography_v1.sbf")
 # Output: 🚀 Injection Complete: 0.3907s
 
-📜 Citation
-If you use .SBF, please cite our whitepaper.
+#📜 Citation
+#If you use .SBF, please cite our whitepaper.
