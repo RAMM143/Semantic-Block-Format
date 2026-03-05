@@ -14,7 +14,7 @@ import sbf
 from unsloth import FastLanguageModel
 
 # 1. Load the Shell
-model, tokenizer = FastLanguageModel.from_pretrained("llama-3-8b-bnb-4bit", load_in_4bit=True)
+model, tokenizer = FastLanguageModel.from_pretrained("unsloth/mistral-7b-instruct-v0.2-bnb-4bit", load_in_4bit=True)
 shell = sbf.NeuralShell(model, tokenizer)
 
 # 2. Inject a Skill (Hot-Swap)
