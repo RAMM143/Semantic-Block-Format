@@ -40,22 +40,37 @@ class NeuralShell:
         return filename
 
     def inject_block(self, sbf_path):
-        """Performs Direct State Overwrite (DSO) injection"""
+        """Performs Direct State Overwrite (DSO) injection (Backwards Compatible)"""
         print(f"⚡ Injecting {sbf_path}...")
         start_t = time.time()
         
         # Load Artifact
         packet = torch.load(sbf_path)
-        layers = packet["meta"]["layers"]
         
+        # ==========================================
+        # 🧠 SMART DETECTION: v1.0 Official vs v0.1 Legacy
+        # ==========================================
+        if "meta" in packet:
+            # It's an official v1.0 block
+            layers = packet["meta"]["layers"]
+            weights = packet["weights"]
+        else:
+            # It's a v0.1 legacy block from earlier experiments (flat dictionary)
+            print("   -> Legacy v0.1 block detected. Auto-inferring layers...")
+            # Automatically figure out which layers are in the file by looking at the keys
+            layers = list(set([int(k.split('.')[1]) for k in packet.keys()]))
+            weights = packet
+        
+        # ==========================================
         # Injection Loop
+        # ==========================================
         with torch.no_grad():
             for i in layers:
                 for name, param in self.model.model.layers[i].named_parameters():
                     key = f"layers.{i}.{name}"
-                    if key in packet["weights"]:
+                    if key in weights:
                         # Direct VRAM Overwrite
-                        param.data.copy_(packet["weights"][key].to(param.device))
+                        param.data.copy_(weights[key].to(param.device))
         
         latency = time.time() - start_t
         print(f"🚀 Injection Complete: {latency:.4f}s")
